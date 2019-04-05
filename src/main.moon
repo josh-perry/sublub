@@ -6,6 +6,8 @@ local enemies
 
 Camera = require("libs.hump.camera")
 
+lg.setDefaultFilter("nearest", "nearest")
+
 drawWater = ->
   lg.setColor(0, 0.47, 0.76, 0.75, 0.75)
   lg.rectangle("fill", 0, 0, lg\getWidth!, lg\getHeight!)

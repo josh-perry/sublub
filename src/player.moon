@@ -7,9 +7,9 @@ Drawable = require("Drawable")
 
 class Player
   new: =>
-    --@drawable = Drawable("assets/sub1.png", 40, 74, 45)
+    @drawable = Drawable("assets/sub1.png", 40, 74, 45, 2)
     --@drawable = Drawable("assets/sub2.png", 60, 73, 31)
-    @drawable = Drawable("assets/ship1.png", 80, 126, 47)
+    --@drawable = Drawable("assets/ship1.png", 80, 126, 47)
     
     @x = 200
     @y = 200
