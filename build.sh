@@ -7,7 +7,7 @@ cd $SRC
 
 clean_lua() {
 	echo -e "${BLUE}Deleting existing Lua files${NC}"
-	find . -name '*.lua' -type f -not -path 'libs/*' -delete
+	#find . -name '*.lua' -type f -not -path 'libs/**' -delete
 
 	echo ""
 }
