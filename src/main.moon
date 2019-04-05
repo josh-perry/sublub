@@ -2,6 +2,7 @@ lg = love.graphics
 
 local player
 local camera
+local enemies
 
 Camera = require("libs.hump.camera")
 
@@ -12,9 +13,16 @@ drawWater = ->
 love.load = ->
   player = require("player")!
   camera = Camera(player.x, player.y)
+
+  enemies = {
+    require("Enemy")("assets/ship1.png", 80, 126, 47)
+  }
   
 love.draw = ->
   camera\attach!
+
+  for i, v in ipairs(enemies)
+    v.drawable\drawSurface!
 
   player.drawable\drawSurface!
 
@@ -23,10 +31,17 @@ love.draw = ->
   player.drawable\drawOutline!
   player.drawable\drawUnderwater!
 
+  for i, v in ipairs(enemies)
+    v.drawable\drawOutline!
+    v.drawable\drawUnderwater!
+
   camera\detach!
 
 love.update = (dt) ->
   player\update(dt)
+
+  for i, v in ipairs(enemies)
+    v\update(dt)
 
   dx = player.x - camera.x
   dy = player.y - camera.y

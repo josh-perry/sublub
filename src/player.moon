@@ -3,10 +3,14 @@ lg = love.graphics
 tau = require("tau")
 states = {Surface: 1, Diving: 2, Underwater: 3, Surfacing: 4}
 
+Drawable = require("Drawable")
+
 class Player
   new: =>
-    @drawable = Drawable("assets/sub1.png", 60, 80)
-
+    --@drawable = Drawable("assets/sub1.png", 40, 74, 45)
+    --@drawable = Drawable("assets/sub2.png", 60, 73, 31)
+    @drawable = Drawable("assets/ship1.png", 80, 126, 47)
+    
     @x = 200
     @y = 200
     @z = 5

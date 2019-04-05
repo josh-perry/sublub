@@ -1,12 +1,15 @@
 lg = love.graphics
 
 class Drawable
-  new: (imagePath) =>
+  new: (imagePath, width, height, zHeight) =>
     @asset = lg.newImage(imagePath)
+    @width = width
+    @height = height
+    @zHeight = zHeight
     @quad = {}
 
-    for i = 0, 45
-      @quad[i] = love.graphics.newQuad(-60 + 60 * i, 0, 60, 80, @asset\getDimensions!)
+    for i = 0, @zHeight
+      @quad[i] = love.graphics.newQuad(-@width + @width * i, 0, @width, @height, @asset\getDimensions!)
 
   updatePosition: (x, y, z, r) =>
     @x = x
@@ -19,15 +22,15 @@ class Drawable
 
     for i = 1, @z
       rgb = 0.6 + i / 100
-      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i, @rotation, 1, 1, 30, 40)
+      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i, @rotation, 1, 1, @width/2, @height/2)
 
   drawUnderwater: =>
     lg.setColor(1, 1, 1)
 
-    for i = @z, 45
+    for i = @z, @zHeight
       rgb = 0.6 + i / 100
       lg.setColor(rgb, rgb, rgb)
-      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i, @rotation, 1, 1, 30, 40)
+      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i, @rotation, 1, 1, @width/2, @height/2)
 
   drawOutline: =>
     offsetX = 0
@@ -59,10 +62,10 @@ class Drawable
         offsetX = -1
         offsetY = -1
 
-      for i = @z, 45
+      for i = @z, @zHeight
         rgb = 0.6 + i / 100
 
         lg.setColor(0, 0, 0.1)
-        lg.draw(@asset, @quad[math.floor(i)], @x + offsetX, @y + offsetY - i, @rotation, 1, 1, 30, 40)
+        lg.draw(@asset, @quad[math.floor(i)], @x + offsetX, @y + offsetY - i, @rotation, 1, 1, @width/2, @height/2)
 
 return Drawable
