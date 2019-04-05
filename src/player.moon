@@ -1,7 +1,7 @@
 lg = love.graphics
 
 tau = require("tau")
-states = {Surface: 1, Diving: 2, Underwater: 3, Surfacing: 4}
+states = require("states")
 
 Drawable = require("Drawable")
 
@@ -25,6 +25,8 @@ class Player
     @dive = false
     @state = states.Surface
 
+    @viewRadius = 512
+
   movement: (dt) =>
     if love.keyboard.isDown("a")
       @rotation -= dt * @rotationSpeed
@@ -42,10 +44,12 @@ class Player
         @state = states.Diving
     elseif @state == states.Diving
       @z += @diveSpeed * dt
+      @viewRadius = 512
 
       if @z >= @maxDiveDepth
         @z = @maxDiveDepth
         @state = states.Underwater
+        @viewRadius = 196
     elseif @state == states.Underwater
       @movement(dt)
 

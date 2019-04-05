@@ -1,6 +1,6 @@
 class Enemy
   new: (imagePath, width, height, zHeight) =>
-    @drawable = require("Drawable")(imagePath, width, height, zHeight, 4)
+    @drawable = require("Drawable")(imagePath, width, height, zHeight, 2)
     @x = 250
     @y = 250
     @z = 0

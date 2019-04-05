@@ -5,6 +5,7 @@ local camera
 local enemies
 
 Camera = require("libs.hump.camera")
+states = require("states")
 
 lg.setDefaultFilter("nearest", "nearest")
 
@@ -19,8 +20,16 @@ love.load = ->
   enemies = {
     require("Enemy")("assets/ship1.png", 80, 126, 47)
   }
-  
+
+viewStencil = ->
+  lg.setColor(1, 1, 1)
+  lg.circle("fill", lg.getWidth! / 2, lg.getHeight! / 2, player.viewRadius)
+
 love.draw = ->
+  if player.state ~= states.Surface
+    lg.stencil(viewStencil, "replace")
+    lg.setStencilTest("greater", 0)
+
   camera\attach!
 
   for i, v in ipairs(enemies)
@@ -38,6 +47,8 @@ love.draw = ->
     v.drawable\drawUnderwater!
 
   camera\detach!
+
+  lg.setStencilTest()
 
 love.update = (dt) ->
   player\update(dt)
