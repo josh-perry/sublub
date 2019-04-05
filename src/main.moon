@@ -16,12 +16,12 @@ love.load = ->
 love.draw = ->
   camera\attach!
 
-  player\drawSurface!
+  player.drawable\drawSurface!
 
   drawWater!
 
-  player\drawOutline!
-  player\drawUnderwater!
+  player.drawable\drawOutline!
+  player.drawable\drawUnderwater!
 
   camera\detach!
 
