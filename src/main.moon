@@ -2,6 +2,7 @@ lg = love.graphics
 
 local player
 local camera
+local sonar
 local enemies
 
 Camera = require("libs.hump.camera")
@@ -20,6 +21,8 @@ love.load = ->
   enemies = {
     require("Enemy")("assets/ship1.png", 80, 126, 47)
   }
+
+  sonar = require("sonar")!
 
 viewStencil = ->
   lg.setColor(1, 1, 1)
@@ -50,6 +53,8 @@ love.draw = ->
 
   lg.setStencilTest()
 
+  sonar\draw!
+
 love.update = (dt) ->
   player\update(dt)
 
@@ -60,6 +65,8 @@ love.update = (dt) ->
   dy = player.y - camera.y
 
   camera\move(dx, dy)
+
+  sonar\update(dt)
 
 love.keypressed = (key) ->
   if key == "escape"
