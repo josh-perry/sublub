@@ -1,11 +1,12 @@
 lg = love.graphics
 
 class Drawable
-  new: (imagePath, width, height, zHeight, scale) =>
-    @asset = lg.newImage(imagePath)
-    @width = width
-    @height = height
-    @zHeight = zHeight
+  new: (model, scale) =>
+    @model = model
+    @asset = lg.newImage(@model.path)
+    @width = @model.x
+    @height = @model.y
+    @zHeight = @model.z
     @scale = scale or 1
     @quad = {}
 
@@ -22,6 +23,9 @@ class Drawable
     lg.setColor(1, 1, 1)
 
     for i = 1, @z
+      if not @quad[math.floor(i)]
+        break
+
       rgb = 0.6 + i / 100
       lg.draw(@asset, @quad[math.floor(i)], @x, @y - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
 
