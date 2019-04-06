@@ -62,9 +62,9 @@ love.draw = ->
     lg.stencil(viewStencil, "replace")
     lg.setStencilTest("greater", 0)
   
-  --lg.setShader(water.shader)
+  lg.setShader(water.shader)
   lg.draw(water.canvas)
-  --lg.setShader!
+  lg.setShader!
 
   camera\attach!
 

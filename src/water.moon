@@ -43,16 +43,16 @@ class Water
     @shader\send("cy", cameraY)
 
     for i = 1, 4
-      if @grid[i].x >= cameraX + 1790
+      if @grid[i].x >= (cameraX - 1280 / 2) + 1790
         @grid[i].x -= 1790 * 2
 
-      if @grid[i].x <= cameraX - 1790
+      if @grid[i].x <= (cameraX - 1280 / 2) - 1790
         @grid[i].x += 1790 * 2
 
-      if @grid[i].y >= cameraY + 1008
+      if @grid[i].y >= (cameraY - 720 / 2) + 1008
         @grid[i].y -= 1008 * 2
 
-      if @grid[i].y <= cameraY - 1008
+      if @grid[i].y <= (cameraY - 720 / 2) - 1008
         @grid[i].y += 1008 * 2
 
   draw: =>
