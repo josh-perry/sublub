@@ -6,6 +6,7 @@ local camera
 local sonar
 local enemies
 local bullets
+local water
 
 Camera = require("libs.hump.camera")
 states = require("states")
@@ -15,12 +16,20 @@ models = require("models")
 lg.setDefaultFilter("nearest", "nearest")
 
 drawWater = ->
-  lg.setColor(0, 0.47, 0.76, 0.75, 0.75)
-  lg.rectangle("fill", 0, 0, lg\getWidth!*3, lg\getHeight!*3)
+  water\draw!
+  --lg.setColor(0, 0.47, 0.76, 0.75, 0.75)
+  --lg.rectangle("fill", 0, 0, lg\getWidth!*3, lg\getHeight!*3)
 
 love.load = ->
   player = require("player")!
   camera = Camera(player.x, player.y)
+ 
+  dx = player.x - camera.x
+  dy = player.y - camera.y
+
+  camera\move(dx, dy)
+
+  water = require("water")(camera.x, camera.y)
   
   paused = false
 
@@ -52,6 +61,10 @@ love.draw = ->
   if player.state ~= states.Surface
     lg.stencil(viewStencil, "replace")
     lg.setStencilTest("greater", 0)
+  
+  --lg.setShader(water.shader)
+  lg.draw(water.canvas)
+  --lg.setShader!
 
   camera\attach!
 
@@ -114,6 +127,7 @@ love.update = (dt) ->
     return
 
   player\update(dt, bullets)
+  water\update(dt, camera.x, camera.y)
 
   for i, v in ipairs(enemies)
     v\update(dt)
