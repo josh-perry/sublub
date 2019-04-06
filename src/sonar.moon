@@ -2,9 +2,9 @@ lg = love.graphics
 
 class Sonar
   new: =>
-    @x = lg.getWidth!/2
-    @y = lg.getHeight!/2
     @r = 128
+    @x = lg.getWidth! - (@r * 1.5)
+    @y = lg.getHeight! - (@r * 1.5)
     @enemies = nil
     @playerX = nil
     @playerY = nil
@@ -36,5 +36,8 @@ class Sonar
   update: (dt, playerX, playerY, enemies) =>
     @playerX, @playerY = playerX, playerY
     @theta += dt * @speed
+
+    for i, v in ipairs(enemies)
+      distance = math.sqrt(((@playerX - v.x) * (@playerX - v.x)) + ((@playerY - v.y) * (@playerY - v.y)))
 
 return Sonar

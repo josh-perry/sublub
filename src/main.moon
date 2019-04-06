@@ -12,7 +12,7 @@ lg.setDefaultFilter("nearest", "nearest")
 
 drawWater = ->
   lg.setColor(0, 0.47, 0.76, 0.75, 0.75)
-  lg.rectangle("fill", 0, 0, lg\getWidth!, lg\getHeight!)
+  lg.rectangle("fill", 0, 0, lg\getWidth!*50, lg\getHeight!*50)
 
 love.load = ->
   player = require("player")!
@@ -66,7 +66,7 @@ love.update = (dt) ->
 
   camera\move(dx, dy)
 
-  sonar\update(dt)
+  sonar\update(dt, player.x, player.y, enemies)
 
 love.keypressed = (key) ->
   if key == "escape"
