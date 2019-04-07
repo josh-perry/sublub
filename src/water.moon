@@ -18,14 +18,12 @@ class Water
     @shader = lg.newShader([[
       extern number time;
       extern number size;
-      extern number cx;
-      extern number cy;
 
       vec4 effect(vec4 color, Image tex, vec2 tc, vec2 pc)
       {
           vec2 p = tc;
-          p.x += sin(p.y * size + time) * 0.01 - cx;
-          p.y += cos(p.x * size - time) * 0.01 - cy;
+          p.x += sin(p.y * size + time) * 0.0005;
+          p.y += sin(p.x * size + time) * 0.0005;
 
           return Texel(tex, p);
       }
@@ -36,11 +34,9 @@ class Water
     @shader\send("time", @time)
 
   update: (dt, cameraX, cameraY) =>
-    @time += dt
+    @time += dt * 5
     @shader\send("size", 10)
     @shader\send("time", @time)
-    @shader\send("cx", cameraX)
-    @shader\send("cy", cameraY)
 
     for i = 1, 4
       if @grid[i].x >= (cameraX - 1280 / 2) + 1790
@@ -56,7 +52,7 @@ class Water
         @grid[i].y += 1008 * 2
 
   draw: =>
-    lg.setColor(1, 1, 1, 0.8)
+    lg.setColor(1, 1, 1, 0.9)
     
     lg.setCanvas(@canvas)
     lg.clear!

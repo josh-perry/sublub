@@ -18,7 +18,21 @@ models = {
       y: 126,
       z: 47
     }
-  }
+  },
+
+  "assets/explosion": {
+    path: "assets/explosion.png",
+    x: 30,
+    y: 30,
+    z: 15
+  },
+
+  "assets/raft": {
+    path: "assets/raft.png",
+    x: 30,
+    y: 30,
+    z: 26
+  },
 
   "assets/sub1": {
     path: "assets/sub1.png"

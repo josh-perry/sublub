@@ -10,8 +10,13 @@ class Enemy
     @rotation = love.math.random(0, 3.141*2)
 
     @objective = objective
+    @sinking = false
+    @sinkSpeed = 35
 
   update: (dt) =>
+    if @sinking
+      @z += @sinkSpeed * dt
+
     @drawable\updatePosition(@x, @y, @z, @rotation)
 
 return Enemy

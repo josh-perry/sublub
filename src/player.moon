@@ -34,10 +34,11 @@ class Player
       @rotation -= dt * @rotationSpeed
     elseif love.keyboard.isDown("d")
       @rotation += dt * @rotationSpeed
+
     if love.keyboard.isDown("w")
       @x += @forwardSpeed * math.cos(@rotation + tau)
       @y += @forwardSpeed * math.sin(@rotation + tau)
- 
+
   update: (dt, bullets) =>
     if @shootTimeout > 0
       @shootTimeout -= dt
@@ -47,6 +48,12 @@ class Player
 
       if love.keyboard.isDown("space")
         @state = states.Diving
+
+      if @shootTimeout <= 0
+        if love.keyboard.isDown("z")
+          @shootTimeout = @maxShootTimeout
+          table.insert(bullets, require("bullet")(models["assets/torpedo"], @x, @y, @rotation))
+
     elseif @state == states.Diving
       @z += @diveSpeed * dt
       @viewRadius = 512
@@ -60,12 +67,6 @@ class Player
 
       if love.keyboard.isDown("space")
         @state = states.Surfacing
-
-      if @shootTimeout <= 0
-        if love.keyboard.isDown("z")
-          @shootTimeout = @maxShootTimeout
-          table.insert(bullets, require("bullet")(models["assets/torpedo"], @x, @y, @rotation))
-
     elseif @state = states.Surfacing
       @z -= @diveSpeed * dt
       @viewRadius = 512

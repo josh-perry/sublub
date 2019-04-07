@@ -1,5 +1,7 @@
 lg = love.graphics
 
+lume = require("libs.lume")
+
 class Drawable
   new: (model, scale) =>
     @model = model
@@ -9,6 +11,7 @@ class Drawable
     @zHeight = @model.z
     @scale = scale or 1
     @quad = {}
+    @offset = love.math.random(0, 1000)
 
     for i = 0, @zHeight
       @quad[i] = love.graphics.newQuad(-@width + @width * i, 0, @width, @height, @asset\getDimensions!)
@@ -16,26 +19,32 @@ class Drawable
   updatePosition: (x, y, z, r) =>
     @x = x
     @y = y
-    @z = z
+    @z = z + (math.sin(love.timer.getTime! + @offset * 3))
     @rotation = r
 
   drawSurface: =>
-    lg.setColor(1, 1, 1)
+    --lg.setColor(.4, .4, .4, 0.1)
+    --lg.setColor(1, 1, 1)
 
     for i = 1, @z
-      if not @quad[math.floor(i)]
-        break
+      if not @quad[lume.round(i)]
+        continue
 
-      rgb = 0.6 + i / 100
-      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
+      rgb = 0.1 + i / 100
+      
+      lg.setColor(rgb, rgb, rgb, 1)
+      lg.draw(@asset, @quad[lume.round(i)], @x, @y - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
 
   drawUnderwater: =>
     lg.setColor(1, 1, 1)
 
     for i = @z, @zHeight
+      if not @quad[lume.round(i)]
+        continue
+
       rgb = 0.6 + i / 100
       lg.setColor(rgb, rgb, rgb)
-      lg.draw(@asset, @quad[math.floor(i)], @x, @y - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
+      lg.draw(@asset, @quad[lume.round(i)], @x, @y - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
 
   drawOutline: =>
     offsetX = 0
@@ -69,8 +78,10 @@ class Drawable
 
       for i = @z, @zHeight
         rgb = 0.6 + i / 100
+        if not @quad[lume.round(i)]
+          continue
 
         lg.setColor(0, 0, 0.1)
-        lg.draw(@asset, @quad[math.floor(i)], @x + offsetX, @y + offsetY - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
+        lg.draw(@asset, @quad[lume.round(i)], @x + offsetX, @y + offsetY - i*@scale, @rotation, @scale, @scale, @width/2, @height/2)
 
 return Drawable

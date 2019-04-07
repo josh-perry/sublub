@@ -1,1 +1,1 @@
-return {Spy: 1, Destroy: 2}
+return {Spy: 1, Destroy: 2, Rescue: 3}
