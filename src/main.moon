@@ -30,10 +30,9 @@ lg.setDefaultFilter("nearest", "nearest")
 
 drawWater = ->
   water\draw!
-  --lg.setColor(0, 0.47, 0.76, 0.75, 0.75)
-  --lg.rectangle("fill", 0, 0, lg\getWidth!*3, lg\getHeight!*3)
 
 love.load = ->
+  love.audio.setVolume(1)
   musicData = love.sound.newSoundData("assets/SUBMARINE_GameplayLoop.wav")
   filterMusicData = musicData\clone!
 
@@ -58,6 +57,9 @@ love.load = ->
 
   lg.setBackgroundColor(1, 1, 1)
   player = require("player")!
+  player.x = lg\getWidth! * 1.5
+  player.y = lg\getHeight! * 1.5
+  
   camera = Camera(player.x, player.y)
 
   objUi = lg.newImage("assets/Obj_UI.png")
@@ -78,19 +80,20 @@ love.load = ->
   explosions = {}
   enemies = {}
   
-  model = models.enemies["assets/ship1"]
-  table.insert(enemies, require("Enemy")(model, 0, 0, objectives.Spy, ai.Wander))
-
   for i = 1, 5
     model = models.enemies["assets/ship1"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander, true))
 
   for i = 1, 5
     model = models.enemies["assets/ship2"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander, true))
  
   for i = 1, 5
     model = models.enemies["assets/ship3"]
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy, ai.Wander))
+
+  for i = 1, 5
+    model = models.enemies["assets/ship4"]
     table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy, ai.Wander))
 
   for i = 1, 5
@@ -104,6 +107,14 @@ viewStencil = ->
   lg.circle("fill", lg.getWidth! / 2, lg.getHeight! / 2, player.viewRadius)
 
 love.draw = ->
+  if player.dead
+    lg.setColor(0, 0, 0)
+    lg.rectangle("fill", 0, 0, lg\getWidth!, lg\getHeight!)
+
+    lg.setColor(1, 1, 1)
+    lg.printf("you ded", 0, lg\getHeight!/2, lg\getWidth!, "center")
+    return
+
   if player.state ~= states.Surface
     lg.stencil(viewStencil, "replace")
     lg.setStencilTest("greater", 0)
@@ -200,7 +211,6 @@ love.draw = ->
   hoY = lg\getHeight! - 16 - hpOxUi\getHeight!
   lg.draw(hpOxUi, hoX, hoY)
   
-
   lg.setScissor(hoX + 7, hoY + 37, (player.hp/100)*64, 10)
   lg.draw(hpImg, hoX + 7, hoY + 37)
   lg.setScissor!
@@ -214,6 +224,9 @@ love.update = (dt) ->
   if paused
     return
 
+  if player.dead
+    return
+
   player\update(dt, bullets)
   water\update(dt, camera.x, camera.y)
 
@@ -221,7 +234,7 @@ love.update = (dt) ->
     if v.z >= 50
       table.remove(enemies, i)
 
-    v\update(dt)
+    v\update(dt, bullets, player)
 
     distance = math.sqrt(((player.x - v.x) * (player.x - v.x)) + ((player.y - v.y) * (player.y - v.y)))
 
@@ -247,13 +260,33 @@ love.update = (dt) ->
   for i, b in ipairs(bullets)
     b\update(dt)
 
+    if not b.playerBullet
+      if player.state == states.Underwater
+        continue
+
+      distance = math.sqrt(((player.x - b.x) * (player.x - b.x)) + ((player.y - b.y) * (player.y - b.y)))
+
+      if distance <= math.max(player.drawable.width, player.drawable.height)
+        player.hp -= 10
+        table.remove(bullets, i)
+
+        if player.hp <= 0
+          player.dead = true
+          filterMusicSource\stop!
+          musicSource\stop!
+
+          sfx["FAILURE_wamp"]\play!
+
+          return
+
+      continue
+
     for _, e in ipairs(enemies)
       distance = math.sqrt(((e.x - b.x) * (e.x - b.x)) + ((e.y - b.y) * (e.y - b.y)))
       
       if distance <= math.max(e.drawable.width, e.drawable.height)
 
         x = love.math.random(1, 3)
-
 
         if sfx["EXPLOSION"..x]\isPlaying!
           sfx["EXPLOSION"..x]\clone!\play!
@@ -271,7 +304,6 @@ love.update = (dt) ->
           else
             sfx["FAILURE_ehehhh"]\play!
  
-
         table.insert(explosions, require("explosion")(e.x, e.y))
         table.remove(bullets, i)
         e.objective = nil

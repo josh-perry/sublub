@@ -12,6 +12,8 @@ class Player
   new: =>
     @drawable = Drawable(models["assets/sub1"], 2)
 
+    @dead = false
+
     @x = 200
     @y = 200
     @z = 5
@@ -33,7 +35,7 @@ class Player
     @oxygenDepletionRate = 10
     @oxygenRepletionRate = 5
 
-    @hp = 50
+    @hp = 100
 
     @viewRadius = 512
 
@@ -63,6 +65,7 @@ class Player
 
       if love.keyboard.isDown("x")
         @state = states.Diving
+        sfx["DIVING"]\play!
 
       if @shootTimeout <= 0
         if love.keyboard.isDown("z")
@@ -87,6 +90,8 @@ class Player
       @movement(dt)
 
       if love.keyboard.isDown("x")
+
+        sfx["EMERGE"]\play!
         @state = states.Surfacing
     elseif @state = states.Surfacing
       @movement(dt)

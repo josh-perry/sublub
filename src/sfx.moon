@@ -9,6 +9,9 @@ sounds = {
   "SONAR2": love.audio.newSource("assets/SONAR.wav", "static")
   "RAFTRESCUE": love.audio.newSource("assets/RAFTRESCUE.wav", "static")
   "TORPEDO": love.audio.newSource("assets/TORPEDOWHOOSH.wav", "static")
+  "ENEMYFIRE": love.audio.newSource("assets/ENEMYFIRE.ogg", "static")
+  "EMERGE": love.audio.newSource("assets/EMERGE.ogg", "static")
+  "DIVING": love.audio.newSource("assets/SUBMERGE.ogg", "static")
 }
 
 return sounds

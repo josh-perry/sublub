@@ -14,8 +14,14 @@ models = {
     },
     "assets/ship3": {
       path: "assets/ship3.png",
-      x: 80,
-      y: 126,
+      x: 38,
+      y: 124,
+      z: 47
+    },
+    "assets/ship4": {
+      path: "assets/ship4.png"
+      x: 38
+      y: 124
       z: 47
     }
   },
@@ -46,6 +52,13 @@ models = {
     x: 9,
     y: 26,
     z: 9
+  },
+
+  "assets/cannonball": {
+    path: "assets/cannonball.png"
+    x: 10
+    y: 10
+    z: 10
   }
 }
 
