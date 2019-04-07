@@ -9,11 +9,22 @@ local bullets
 local water
 local objUi
 local explosions
+local musicData
+local filterMusicData
+local musicSource
+local filterMusicSource
+local hpOxUi
+local hpImg
+local oxImg
+
+sone = require("libs.sone")
 
 Camera = require("libs.hump.camera")
 states = require("states")
 objectives = require("objectives")
+ai = require("ai")
 models = require("models")
+sfx = require("sfx")
 
 lg.setDefaultFilter("nearest", "nearest")
 
@@ -23,6 +34,28 @@ drawWater = ->
   --lg.rectangle("fill", 0, 0, lg\getWidth!*3, lg\getHeight!*3)
 
 love.load = ->
+  musicData = love.sound.newSoundData("assets/SUBMARINE_GameplayLoop.wav")
+  filterMusicData = musicData\clone!
+
+  sone.filter(filterMusicData, {
+    type: "lowpass"
+    frequency: 150
+  })
+  --music = love.audio.newSource("assets/SUBMARINE_GameplayLoop.wav", "stream")
+  filterMusicSource = love.audio.newSource(filterMusicData)
+  filterMusicSource\setLooping(true)
+  filterMusicSource\setVolume(0)
+  filterMusicSource\play!
+  
+  musicSource = love.audio.newSource(musicData)
+  musicSource\setLooping(true)
+  musicSource\setVolume(1)
+  musicSource\play!
+
+  hpOxUi = lg.newImage("assets/HP_OX.png")
+  hpImg = lg.newImage("assets/hp.png")
+  oxImg = lg.newImage("assets/ox.png")
+
   lg.setBackgroundColor(1, 1, 1)
   player = require("player")!
   camera = Camera(player.x, player.y)
@@ -44,18 +77,21 @@ love.load = ->
   bullets = {}
   explosions = {}
   enemies = {}
+  
+  model = models.enemies["assets/ship1"]
+  table.insert(enemies, require("Enemy")(model, 0, 0, objectives.Spy, ai.Wander))
 
   for i = 1, 5
     model = models.enemies["assets/ship1"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander))
 
   for i = 1, 5
     model = models.enemies["assets/ship2"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander))
  
   for i = 1, 5
     model = models.enemies["assets/ship3"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy, ai.Wander))
 
   for i = 1, 5
     model = models["assets/raft"]
@@ -159,6 +195,21 @@ love.draw = ->
   lg.printf(destroyTotal, 16 + 98, uiY + 80 + 7, 23, "center")
   lg.printf(rescueTotal, 16 + 98, uiY + 118 + 7, 23, "center")
 
+  lg.setColor(1, 1, 1)
+  hoX = lg\getWidth!/2 - hpOxUi\getWidth!/2
+  hoY = lg\getHeight! - 16 - hpOxUi\getHeight!
+  lg.draw(hpOxUi, hoX, hoY)
+  
+
+  lg.setScissor(hoX + 7, hoY + 37, (player.hp/100)*64, 10)
+  lg.draw(hpImg, hoX + 7, hoY + 37)
+  lg.setScissor!
+
+  lg.setScissor(hoX + 92, hoY + 37, (player.oxygen/100)*64, 10)
+  lg.draw(oxImg, hoX + 92, hoY + 37)
+  lg.setScissor!
+  --lg.draw(hpOxUi, lg\getWidth!/2, lg\getHeight! - hpOxUi\getHeight! - 16, 1, 1, hpOxUi\getWidth!/2, hpOxUi\getHeight!/2)
+
 love.update = (dt) ->
   if paused
     return
@@ -175,7 +226,17 @@ love.update = (dt) ->
     distance = math.sqrt(((player.x - v.x) * (player.x - v.x)) + ((player.y - v.y) * (player.y - v.y)))
 
     if v.objective == objectives.Spy and distance <= 200 and player.state == states.Underwater
+      if sfx["OBJECTIVECOMPLETE"]\isPlaying!
+        sfx["OBJECTIVECOMPLETE"]\clone!\play!
+      else
+        sfx["OBJECTIVECOMPLETE"]\play!
+        
       v.objective = nil
+
+    if v.objective == objectives.Rescue and distance <= 100 and player.state == states.Surface
+      v.objectives = nil
+      sfx["RAFTRESCUE"]\play!
+      table.remove(enemies, i)
 
   for i, e in ipairs(explosions)
     e\update(dt)
@@ -190,6 +251,27 @@ love.update = (dt) ->
       distance = math.sqrt(((e.x - b.x) * (e.x - b.x)) + ((e.y - b.y) * (e.y - b.y)))
       
       if distance <= math.max(e.drawable.width, e.drawable.height)
+
+        x = love.math.random(1, 3)
+
+
+        if sfx["EXPLOSION"..x]\isPlaying!
+          sfx["EXPLOSION"..x]\clone!\play!
+        else
+          sfx["EXPLOSION"..x]\play!
+
+        if e.objective == objectives.Destroy
+          if sfx["OBJECTIVECOMPLETE"]\isPlaying!
+            sfx["OBJECTIVECOMPLETE"]\clone!\play!
+          else
+            sfx["OBJECTIVECOMPLETE"]\play!
+        else
+          if sfx["FAILURE_ehehhh"]\isPlaying!
+            sfx["FAILURE_ehehhh"]\clone!\play!
+          else
+            sfx["FAILURE_ehehhh"]\play!
+ 
+
         table.insert(explosions, require("explosion")(e.x, e.y))
         table.remove(bullets, i)
         e.objective = nil
@@ -201,6 +283,13 @@ love.update = (dt) ->
   camera\move(dx, dy)
 
   sonar\update(dt, player.x, player.y, enemies)
+
+  if player.state == states.Underwater
+    filterMusicSource\setVolume(1)
+    musicSource\setVolume(0)
+  else
+    filterMusicSource\setVolume(0)
+    musicSource\setVolume(1)
 
 love.keypressed = (key) ->
   if key == "escape"

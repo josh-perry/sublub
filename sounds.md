@@ -1,7 +1,8 @@
-# yesinately
 diving
 surfacing
 objective complete
-torpedo
-explosions
+you fucked up an objective
+torpedo launch
+explosion
 sonar pings
+raft rescued

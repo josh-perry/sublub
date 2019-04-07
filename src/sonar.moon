@@ -1,4 +1,5 @@
 objectives = require("objectives")
+sfx = require("sfx")
 
 lg = love.graphics
 
@@ -17,6 +18,8 @@ class Sonar
     @speed = 3
 
     @image = lg.newImage("assets/sonar.png")
+
+    @pingTime = true
 
     @dots = {}
 
@@ -73,7 +76,10 @@ class Sonar
       elseif v.objective == objectives.Rescue
         c = {0, .5, 0, 1}
       else
-        continue
+        if v.sinking
+          continue
+
+        c = {1, 1, 1}
 
       t = math.atan2(v.y - @playerY, v.x - @playerX)
 
@@ -104,8 +110,14 @@ class Sonar
 
     if @theta >= (math.pi * 2)
       @theta = 0
+      @pingTime = true
 
     @enemies = enemies
+
+    if @pingTime and @theta >= math.pi*1.5
+      sfx["SONAR"]\stop!
+      sfx["SONAR"]\play!
+      @pingTime = false
 
     for i, v in ipairs(@dots)
       v.time -= dt
