@@ -8,11 +8,11 @@ tau = require("tau")
 lg = love.graphics
 
 class Enemy
-  new: (model, x, y, objective, ai, canShoot) =>
+  new: (model, x, y, objective, ai, canShoot, z) =>
     @drawable = require("Drawable")(model, 2)
     @x = x or 250
     @y = y or 250
-    @z = 10
+    @z = z or 10
     @canShoot = canShoot
     @rotation = love.math.random(0, 3.141*2)
 
@@ -31,10 +31,6 @@ class Enemy
     @maxShootTimeout = 3
 
     @pickRandomMoveTarget!
-
-    dx = @moveTargetX - @x
-    dy = @moveTargetY - @y
-    theta = math.atan2(dy, dx)
 
   pickRandomMoveTarget: =>
     @moveTargetX = love.math.random(0, lg\getWidth!*3)

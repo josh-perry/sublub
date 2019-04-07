@@ -80,25 +80,42 @@ love.load = ->
   explosions = {}
   enemies = {}
   
-  for i = 1, 5
+  for i = 1, 3
     model = models.enemies["assets/ship1"]
     table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander, true))
 
-  for i = 1, 5
+  for i = 1, 3
+    model = models.enemies["assets/ship1B"]
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander, true))
+
+  for i = 1, 3
     model = models.enemies["assets/ship2"]
     table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Spy, ai.Wander, true))
  
-  for i = 1, 5
+  for i = 1, 3
     model = models.enemies["assets/ship3"]
     table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy, ai.Wander))
 
-  for i = 1, 5
+  for i = 1, 3
     model = models.enemies["assets/ship4"]
     table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Destroy, ai.Wander))
 
-  for i = 1, 5
+  for i = 1, 3
     model = models["assets/raft"]
-    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Rescue))
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Rescue, nil, false, 0))
+
+  for i = 1, 3
+    model = models["assets/raft2"]
+    table.insert(enemies, require("Enemy")(model, love.math.random(0, maxWidth), love.math.random(0, maxHeight), objectives.Rescue, nil, false, 0))
+
+  for i, v in ipairs(enemies)
+    distance = math.sqrt(((player.x - v.x) * (player.x - v.x)) + ((player.y - v.y) * (player.y - v.y)))
+
+    while distance <= 750
+      v.x = love.math.random(0, maxWidth)
+      v.y = love.math.random(0, maxHeight)
+
+      distance = math.sqrt(((player.x - v.x) * (player.x - v.x)) + ((player.y - v.y) * (player.y - v.y)))
 
   sonar = require("sonar")!
 
@@ -133,9 +150,6 @@ love.draw = ->
     v.drawable\drawSurface!
 
   for i, v in ipairs(enemies)
-    v.drawable\drawSurface!
-
-  for i, v in ipairs(explosions)
     v.drawable\drawSurface!
 
   player.drawable\drawSurface!
@@ -177,8 +191,7 @@ love.draw = ->
       lg.circle("line", v.x, v.y, (math.max(v.drawable.width, v.drawable.height)*v.drawable.scale)/2)
 
   for i, v in ipairs(explosions)
-    v.drawable\drawOutline!
-    v.drawable\drawUnderwater!
+    v\draw!
 
   lg.setLineWidth(1)
   camera\detach!
@@ -278,6 +291,16 @@ love.update = (dt) ->
           sfx["FAILURE_wamp"]\play!
 
           return
+        else
+          if sfx["EXPLOSION2"]\isPlaying!
+            sfx["EXPLOSION2"]\clone!\play!
+          else
+            sfx["EXPLOSION2"]\play!
+
+          if sfx["FAILURE_ehehhh"]\isPlaying!
+            sfx["FAILURE_ehehhh"]\clone!\play!
+          else
+            sfx["FAILURE_ehehhh"]\play!
 
       continue
 

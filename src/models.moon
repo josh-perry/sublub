@@ -2,9 +2,15 @@ models = {
   enemies: {
     "assets/ship1": {
       path: "assets/ship1.png"
-      x: 80
-      y: 126
-      z: 47
+      x: 48
+      y: 122
+      z: 46
+    },
+    "assets/ship1B": {
+      path: "assets/ship1B.png"
+      x: 35
+      y: 122
+      z: 46
     },
     "assets/ship2": {
       path: "assets/ship2.png",
@@ -38,6 +44,13 @@ models = {
     x: 30,
     y: 30,
     z: 26
+  },
+
+  "assets/raft2": {
+    path: "assets/raft2.png",
+    x: 30,
+    y: 30,
+    z: 25
   },
 
   "assets/sub1": {
